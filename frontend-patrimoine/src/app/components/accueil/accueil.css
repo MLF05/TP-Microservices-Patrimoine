@@ -1,0 +1,13 @@
+.hero { padding: 3rem 2.5rem; border-radius: 16px; color: #fff; background: linear-gradient(135deg, #0b3d2e 0%, #14634b 100%); }
+.hero-eyebrow { margin: 0 0 .5rem; text-transform: uppercase; letter-spacing: .12em; font-size: .75rem; font-weight: 600; color: #e6c06a; }
+.hero h1 { color: #fff; font-size: clamp(1.7rem, 4vw, 2.5rem); font-weight: 700; line-height: 1.2; margin: 0 0 .75rem; max-width: 620px; }
+.hero-lead { margin: 0; max-width: 560px; color: rgba(255, 255, 255, .85); font-size: 1.02rem; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.5rem; }
+
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1.25rem; }
+.stat { display: flex; align-items: center; gap: .9rem; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.1rem; box-shadow: var(--shadow); }
+.stat strong { display: block; font-size: 1.4rem; line-height: 1.1; color: var(--brand-dark); }
+.stat span:not(.tile) { font-size: .8rem; color: var(--muted); }
+
+@media (max-width: 900px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .hero { padding: 2rem 1.25rem; } .stats { grid-template-columns: 1fr; } }

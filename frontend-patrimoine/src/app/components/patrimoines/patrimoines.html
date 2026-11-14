@@ -1,0 +1,68 @@
+<div class="page-head">
+  <div>
+    <h1>Patrimoines</h1>
+    <p>{{ patrimoines.length }} site(s) patrimonial(aux) référencé(s)</p>
+  </div>
+  <div class="head-actions">
+    <div class="search">
+      <i class="fas fa-search"></i>
+      <input type="search" placeholder="Rechercher un site…" [(ngModel)]="recherche">
+    </div>
+    <button class="b b-primary" (click)="ouvrirFormulaireAjout()"><i class="fas fa-plus"></i> Ajouter</button>
+  </div>
+</div>
+
+@if (errorMessage) { <div class="notice err"><i class="fas fa-circle-exclamation"></i>{{ errorMessage }}</div> }
+@if (successMessage) { <div class="notice ok"><i class="fas fa-circle-check"></i>{{ successMessage }}</div> }
+
+@if (afficherFormulaire) {
+  <div class="panel">
+    <div class="panel-head">{{ modeEdition ? 'Modifier' : 'Ajouter' }} un patrimoine</div>
+    <div class="panel-body">
+      <div class="form-grid">
+        <div class="field c-6"><label>Nom</label><input type="text" [(ngModel)]="patrimoineEnCours.nom"></div>
+        <div class="field c-6"><label>Code</label><input type="text" [(ngModel)]="patrimoineEnCours.code"></div>
+        <div class="field c-12"><label>Description</label><input type="text" [(ngModel)]="patrimoineEnCours.description"></div>
+        <div class="field c-12"><label>Historique</label><input type="text" [(ngModel)]="patrimoineEnCours.historique"></div>
+        <div class="field c-6"><label>Adresse</label><input type="text" [(ngModel)]="patrimoineEnCours.adresse"></div>
+        <div class="field c-6"><label>Capacité</label><input type="number" [(ngModel)]="patrimoineEnCours.capacite"></div>
+      </div>
+      <div class="form-actions">
+        <button class="b b-primary" (click)="enregistrer()">{{ modeEdition ? 'Mettre à jour' : 'Enregistrer' }}</button>
+        <button class="b b-light" (click)="fermerFormulaire()">Annuler</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (chargement) {
+  <div class="loading"><i class="fas fa-spinner fa-spin me-2"></i>Chargement…</div>
+}
+
+<div class="grid">
+  @for (p of patrimoinesFiltres; track p.id) {
+    <article class="item">
+      <div class="item-top">
+        <span class="tile"><i class="fas fa-landmark"></i></span>
+        <span class="chip gray">{{ p.code }}</span>
+      </div>
+      <h3>{{ p.nom }}</h3>
+      <p class="sub"><i class="fas fa-location-dot"></i> {{ p.adresse }}</p>
+      <p class="desc">{{ p.description }}</p>
+      <div class="item-foot">
+        <span class="chip"><i class="fas fa-users"></i> {{ p.capacite }} pers.</span>
+        <div class="actions">
+          <button class="ib" title="Modifier" (click)="ouvrirFormulaireModif(p)"><i class="fas fa-pen"></i></button>
+          <button class="ib danger" title="Supprimer" (click)="supprimer(p.id)"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+    </article>
+  }
+</div>
+
+@if (!chargement && patrimoinesFiltres.length === 0 && !errorMessage) {
+  <div class="empty">
+    <i class="fas fa-landmark"></i>
+    {{ recherche ? 'Aucun résultat pour cette recherche.' : 'Aucun patrimoine enregistré. Cliquez sur « Ajouter » pour créer le premier.' }}
+  </div>
+}

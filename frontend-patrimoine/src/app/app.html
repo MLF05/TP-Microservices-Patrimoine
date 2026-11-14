@@ -1,0 +1,33 @@
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" routerLink="/" (click)="fermer()">
+      <span class="brand-mark"><i class="fas fa-landmark"></i></span>
+      <span>Patrimoine <small>Ziguinchor</small></span>
+    </a>
+
+    <button class="burger" type="button" aria-label="Menu" [attr.aria-expanded]="ouvert()" (click)="basculer()">
+      <i class="fas" [class.fa-bars]="!ouvert()" [class.fa-xmark]="ouvert()"></i>
+    </button>
+
+    <nav class="nav" [class.open]="ouvert()">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="fermer()">Accueil</a>
+      <a routerLink="/patrimoines" routerLinkActive="active" (click)="fermer()">Patrimoines</a>
+      <a routerLink="/circuits" routerLinkActive="active" (click)="fermer()">Circuits</a>
+      <a routerLink="/evenements" routerLinkActive="active" (click)="fermer()">Événements</a>
+      <a routerLink="/reservations" routerLinkActive="active" (click)="fermer()">Réservations</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <div class="wrap">
+    <router-outlet />
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap foot-inner">
+    <span>© {{ annee }} Patrimoine de Ziguinchor — TP Microservices, L3 2I, UASZ</span>
+    <span>Mouhamed Fam</span>
+  </div>
+</footer>

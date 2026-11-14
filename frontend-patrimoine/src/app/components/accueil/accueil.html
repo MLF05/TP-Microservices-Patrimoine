@@ -1,0 +1,73 @@
+<section class="hero">
+  <p class="hero-eyebrow">Casamance · Sénégal</p>
+  <h1>Découvrez le patrimoine de Ziguinchor</h1>
+  <p class="hero-lead">Sites historiques, circuits de visite et événements culturels : explorez la ville et réservez votre visite en quelques clics.</p>
+  <div class="hero-actions">
+    <a routerLink="/patrimoines" class="b b-gold"><i class="fas fa-compass"></i> Explorer les sites</a>
+    <a routerLink="/reservations" class="b b-outline"><i class="fas fa-ticket-alt"></i> Réserver une visite</a>
+  </div>
+</section>
+
+<section class="stats">
+  @for (s of stats(); track s.label) {
+    <div class="stat">
+      <span class="tile"><i class="fas {{ s.icone }}"></i></span>
+      <div>
+        <strong>{{ chargement() ? '…' : s.valeur }}</strong>
+        <span>{{ s.label }}</span>
+      </div>
+    </div>
+  }
+</section>
+
+@if (horsLigne() && !chargement()) {
+  <div class="notice warn" style="margin-top: 1.25rem">
+    <i class="fas fa-triangle-exclamation"></i>
+    Les microservices ne répondent pas. Vérifiez qu'ils sont démarrés (ports 8080 à 8083).
+  </div>
+}
+
+<div class="section-head">
+  <h2>Sites patrimoniaux</h2>
+  <a routerLink="/patrimoines" class="b b-light b-sm">Tout voir <i class="fas fa-arrow-right"></i></a>
+</div>
+<div class="grid">
+  @for (p of patrimoinesAffiches(); track p.id) {
+    <article class="item">
+      <div class="item-top">
+        <span class="tile"><i class="fas fa-landmark"></i></span>
+        <span class="chip gray">{{ p.code }}</span>
+      </div>
+      <h3>{{ p.nom }}</h3>
+      <p class="sub"><i class="fas fa-location-dot"></i> {{ p.adresse }}</p>
+      <p class="desc">{{ p.description }}</p>
+    </article>
+  } @empty {
+    <div class="empty" style="grid-column: 1 / -1">
+      <i class="fas fa-landmark"></i>{{ chargement() ? 'Chargement…' : 'Aucun site enregistré pour le moment.' }}
+    </div>
+  }
+</div>
+
+<div class="section-head">
+  <h2>Événements à l'affiche</h2>
+  <a routerLink="/evenements" class="b b-light b-sm">Tout voir <i class="fas fa-arrow-right"></i></a>
+</div>
+<div class="grid">
+  @for (e of evenementsAffiche(); track e.id) {
+    <article class="item">
+      <div class="item-top">
+        <div class="date-tile"><b>{{ e.dateDebut | date: 'dd' }}</b><span>{{ e.dateDebut | date: 'MMM' }}</span></div>
+        <span class="chip">{{ e.capaciteMaximale - (e.placesReservees || 0) }} places</span>
+      </div>
+      <h3>{{ e.nom }}</h3>
+      <p class="sub"><i class="fas fa-clock"></i> {{ e.horaire }} · <i class="fas fa-location-dot"></i> {{ e.lieu }}</p>
+      <div class="bar"><span [style.width.%]="tauxRemplissage(e)"></span></div>
+      <p class="bar-label">{{ e.placesReservees || 0 }} réservée(s) sur {{ e.capaciteMaximale }}</p>
+    </article>
+  } @empty {
+    <div class="empty" style="grid-column: 1 / -1">
+      <i class="fas fa-calendar-alt"></i>{{ chargement() ? 'Chargement…' : 'Aucun événement programmé.' }}
+    </div>
+  }
+</div>

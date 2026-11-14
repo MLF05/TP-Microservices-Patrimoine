@@ -1,0 +1,66 @@
+<div class="page-head">
+  <div>
+    <h1>Événements</h1>
+    <p>{{ evenements.length }} événement(s) au programme</p>
+  </div>
+  <div class="head-actions">
+    <button class="b b-primary" (click)="ouvrirFormulaireAjout()"><i class="fas fa-plus"></i> Ajouter</button>
+  </div>
+</div>
+
+@if (errorMessage) { <div class="notice err"><i class="fas fa-circle-exclamation"></i>{{ errorMessage }}</div> }
+@if (successMessage) { <div class="notice ok"><i class="fas fa-circle-check"></i>{{ successMessage }}</div> }
+
+@if (afficherFormulaire) {
+  <div class="panel">
+    <div class="panel-head">{{ modeEdition ? 'Modifier' : 'Ajouter' }} un événement</div>
+    <div class="panel-body">
+      <div class="form-grid">
+        <div class="field c-12"><label>Nom</label><input type="text" [(ngModel)]="evenementEnCours.nom"></div>
+        <div class="field c-12"><label>Description</label><input type="text" [(ngModel)]="evenementEnCours.description"></div>
+        <div class="field c-6"><label>Date de début</label><input type="date" [(ngModel)]="evenementEnCours.dateDebut"></div>
+        <div class="field c-6"><label>Date de fin</label><input type="date" [(ngModel)]="evenementEnCours.dateFin"></div>
+        <div class="field c-6"><label>Horaire</label><input type="text" [(ngModel)]="evenementEnCours.horaire" placeholder="Ex : 10:00 - 12:00"></div>
+        <div class="field c-6"><label>Lieu</label><input type="text" [(ngModel)]="evenementEnCours.lieu"></div>
+        <div class="field c-6"><label>Capacité maximale</label><input type="number" [(ngModel)]="evenementEnCours.capaciteMaximale"></div>
+        <div class="field c-6"><label>Places réservées</label><input type="number" [(ngModel)]="evenementEnCours.placesReservees"></div>
+      </div>
+      <div class="form-actions">
+        <button class="b b-primary" (click)="enregistrer()">{{ modeEdition ? 'Mettre à jour' : 'Enregistrer' }}</button>
+        <button class="b b-light" (click)="fermerFormulaire()">Annuler</button>
+      </div>
+    </div>
+  </div>
+}
+
+<div class="grid">
+  @for (e of evenements; track e.id) {
+    <article class="item">
+      <div class="item-top">
+        <div class="date-tile"><b>{{ e.dateDebut | date: 'dd' }}</b><span>{{ e.dateDebut | date: 'MMM' }}</span></div>
+        <span class="chip" [class.red]="e.capaciteMaximale - (e.placesReservees || 0) <= 0">
+          {{ e.capaciteMaximale - (e.placesReservees || 0) <= 0 ? 'Complet' : (e.capaciteMaximale - (e.placesReservees || 0)) + ' places' }}
+        </span>
+      </div>
+      <h3>{{ e.nom }}</h3>
+      <p class="sub">{{ e.description }}</p>
+      <div class="meta">
+        <span><i class="fas fa-clock"></i>{{ e.horaire }}</span>
+        <span><i class="fas fa-location-dot"></i>{{ e.lieu }}</span>
+      </div>
+      <div class="bar"><span [style.width.%]="e.capaciteMaximale ? (100 * (e.placesReservees || 0)) / e.capaciteMaximale : 0"></span></div>
+      <p class="bar-label">{{ e.placesReservees || 0 }} réservée(s) sur {{ e.capaciteMaximale }}</p>
+      <div class="item-foot">
+        <span class="chip gray">{{ e.dateDebut | date: 'dd MMM yyyy' }}</span>
+        <div class="actions">
+          <button class="ib" title="Modifier" (click)="ouvrirFormulaireModif(e)"><i class="fas fa-pen"></i></button>
+          <button class="ib danger" title="Supprimer" (click)="supprimer(e.id)"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+    </article>
+  }
+</div>
+
+@if (evenements.length === 0 && !errorMessage) {
+  <div class="empty"><i class="fas fa-calendar-alt"></i>Aucun événement enregistré. Cliquez sur « Ajouter » pour en créer un.</div>
+}

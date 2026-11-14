@@ -1,0 +1,71 @@
+<div class="page-head">
+  <div>
+    <h1>Circuits</h1>
+    <p>{{ circuits.length }} parcours de visite</p>
+  </div>
+  <div class="head-actions">
+    <button class="b b-primary" (click)="ouvrirFormulaireAjout()"><i class="fas fa-plus"></i> Ajouter</button>
+  </div>
+</div>
+
+@if (errorMessage) { <div class="notice err"><i class="fas fa-circle-exclamation"></i>{{ errorMessage }}</div> }
+@if (successMessage) { <div class="notice ok"><i class="fas fa-circle-check"></i>{{ successMessage }}</div> }
+
+@if (afficherFormulaire) {
+  <div class="panel">
+    <div class="panel-head">{{ modeEdition ? 'Modifier' : 'Ajouter' }} un circuit</div>
+    <div class="panel-body">
+      <div class="form-grid">
+        <div class="field c-6"><label>Nom</label><input type="text" [(ngModel)]="circuitEnCours.nom"></div>
+        <div class="field c-6">
+          <label>Difficulté</label>
+          <select [(ngModel)]="circuitEnCours.difficulte">
+            <option value="FACILE">Facile</option>
+            <option value="MOYEN">Moyen</option>
+            <option value="DIFFICILE">Difficile</option>
+          </select>
+        </div>
+        <div class="field c-12"><label>Description</label><input type="text" [(ngModel)]="circuitEnCours.description"></div>
+        <div class="field c-4"><label>Durée (min)</label><input type="number" [(ngModel)]="circuitEnCours.dureeEstimee"></div>
+        <div class="field c-4"><label>Distance (km)</label><input type="number" step="0.1" [(ngModel)]="circuitEnCours.distance"></div>
+        <div class="field c-4"><label>Points d'intérêt</label><input type="text" [(ngModel)]="circuitEnCours.pointsInteret"></div>
+        <div class="field c-12"><label>Étapes</label><input type="text" [(ngModel)]="circuitEnCours.etapes" placeholder="Ex : Musée → Monument → Parc"></div>
+      </div>
+      <div class="form-actions">
+        <button class="b b-primary" (click)="enregistrer()">{{ modeEdition ? 'Mettre à jour' : 'Enregistrer' }}</button>
+        <button class="b b-light" (click)="fermerFormulaire()">Annuler</button>
+      </div>
+    </div>
+  </div>
+}
+
+<div class="grid">
+  @for (c of circuits; track c.id) {
+    <article class="item">
+      <div class="item-top">
+        <span class="tile"><i class="fas fa-route"></i></span>
+        <span class="chip" [class.gold]="c.difficulte === 'MOYEN'" [class.red]="c.difficulte === 'DIFFICILE'">
+          {{ c.difficulte === 'FACILE' ? 'Facile' : c.difficulte === 'MOYEN' ? 'Moyen' : 'Difficile' }}
+        </span>
+      </div>
+      <h3>{{ c.nom }}</h3>
+      <p class="sub">{{ c.description }}</p>
+      <div class="meta">
+        <span><i class="fas fa-clock"></i>{{ c.dureeEstimee }} min</span>
+        <span><i class="fas fa-ruler"></i>{{ c.distance }} km</span>
+      </div>
+      <p class="desc"><i class="fas fa-signs-post me-1" style="color: var(--brand)"></i>{{ c.etapes }}</p>
+      <div class="item-foot">
+        <span class="chip gray">{{ c.pointsInteret }}</span>
+        <div class="actions">
+          <button class="ib" title="Modifier" (click)="ouvrirFormulaireModif(c)"><i class="fas fa-pen"></i></button>
+          <button class="ib danger" title="Supprimer" (click)="supprimer(c.id)"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+    </article>
+  }
+</div>
+
+@if (circuits.length === 0 && !errorMessage) {
+  <div class="empty"><i class="fas fa-route"></i>Aucun circuit enregistré. Cliquez sur « Ajouter » pour en créer un.</div>
+}

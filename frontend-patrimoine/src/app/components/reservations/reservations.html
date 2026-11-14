@@ -1,0 +1,101 @@
+<div class="page-head">
+  <div>
+    <h1>Réservations</h1>
+    <p>{{ reservations.length }} réservation(s) enregistrée(s)</p>
+  </div>
+  <div class="head-actions">
+    <button class="b b-primary" (click)="ouvrirFormulaireAjout()"><i class="fas fa-plus"></i> Nouvelle réservation</button>
+  </div>
+</div>
+
+@if (errorMessage) { <div class="notice err"><i class="fas fa-circle-exclamation"></i>{{ errorMessage }}</div> }
+@if (successMessage) { <div class="notice ok"><i class="fas fa-circle-check"></i>{{ successMessage }}</div> }
+
+@if (afficherFormulaire) {
+  <div class="panel">
+    <div class="panel-head">Nouvelle réservation</div>
+    <div class="panel-body">
+      <div class="form-grid">
+        <div class="field c-6"><label>Nom du client</label><input type="text" [(ngModel)]="reservationEnCours.nomClient"></div>
+        <div class="field c-6">
+          <label>Type de cible</label>
+          <select [(ngModel)]="reservationEnCours.typeCible" (change)="changerType()">
+            <option value="EVENEMENT">Événement</option>
+            <option value="CIRCUIT">Circuit</option>
+          </select>
+        </div>
+        @if (reservationEnCours.typeCible === 'EVENEMENT') {
+          <div class="field c-6">
+            <label>Événement</label>
+            <select [(ngModel)]="reservationEnCours.referenceCible">
+              <option [ngValue]="null" disabled>— Sélectionnez un événement —</option>
+              @for (e of evenements; track e.id) {
+                <option [ngValue]="e.id">{{ e.nom }} ({{ e.lieu }})</option>
+              }
+            </select>
+          </div>
+        }
+        @if (reservationEnCours.typeCible === 'CIRCUIT') {
+          <div class="field c-6">
+            <label>Circuit</label>
+            <select [(ngModel)]="reservationEnCours.referenceCible">
+              <option [ngValue]="null" disabled>— Sélectionnez un circuit —</option>
+              @for (c of circuits; track c.id) {
+                <option [ngValue]="c.id">{{ c.nom }} ({{ c.dureeEstimee }} min)</option>
+              }
+            </select>
+          </div>
+        }
+        <div class="field c-6"><label>Nombre de places</label><input type="number" min="1" [(ngModel)]="reservationEnCours.nombrePlaces"></div>
+      </div>
+      <div class="form-actions">
+        <button class="b b-primary" (click)="enregistrer()">Enregistrer</button>
+        <button class="b b-light" (click)="fermerFormulaire()">Annuler</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (reservations.length > 0) {
+  <div class="panel">
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr>
+            <th>N°</th><th>Client</th><th>Type</th><th>Réf.</th><th>Places</th><th>Date</th><th>Statut</th><th class="end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of reservations; track r.id) {
+            <tr>
+              <td>#{{ r.id }}</td>
+              <td><strong>{{ r.nomClient }}</strong></td>
+              <td><span class="chip gray">{{ r.typeCible === 'EVENEMENT' ? 'Événement' : 'Circuit' }}</span></td>
+              <td>{{ r.referenceCible }}</td>
+              <td>{{ r.nombrePlaces }}</td>
+              <td>{{ r.dateReservation }}</td>
+              <td>
+                <span class="chip" [class.gold]="r.statut === 'EN_ATTENTE'" [class.red]="r.statut === 'ANNULEE'">
+                  {{ r.statut === 'EN_ATTENTE' ? 'En attente' : r.statut === 'CONFIRMEE' ? 'Confirmée' : 'Annulée' }}
+                </span>
+              </td>
+              <td class="end">
+                <div class="actions">
+                  @if (r.statut === 'EN_ATTENTE') {
+                    <button class="ib" title="Confirmer" (click)="confirmer(r.id)"><i class="fas fa-check"></i></button>
+                  }
+                  @if (r.statut !== 'ANNULEE') {
+                    <button class="ib" title="Annuler" (click)="annuler(r.id)"><i class="fas fa-ban"></i></button>
+                  }
+                  <button class="ib danger" title="Supprimer" (click)="supprimer(r.id)"><i class="fas fa-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+} @else if (!errorMessage) {
+  <div class="empty"><i class="fas fa-ticket-alt"></i>Aucune réservation enregistrée. Cliquez sur « Nouvelle réservation » pour en créer une.</div>
+}
