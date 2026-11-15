@@ -85,4 +85,5 @@ public class EvenementController {
         this.evenementService.libererPlaces(id, nombrePlaces);
         return ResponseEntity.ok().build();
     }
+    
 }

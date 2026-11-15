@@ -19,9 +19,9 @@ public class ReservationService implements IReservationService {
     @Autowired
     private RestTemplate restTemplate;
 
-    // URLs des autres microservices
-    private static final String CIRCUIT_URL = "http://localhost:8081/api/circuits/";
-    private static final String EVENEMENT_URL = "http://localhost:8082/api/evenements/";
+    // URLs des autres microservices (noms de conteneurs Docker)
+    private static final String CIRCUIT_URL = "http://ms-circuit:8081/api/circuits/";
+    private static final String EVENEMENT_URL = "http://ms-evenement:8082/api/evenements/";
 
     @Override
     public Reservation creerReservation(Reservation reservation) {

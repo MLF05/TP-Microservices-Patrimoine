@@ -89,14 +89,22 @@ export class Reservations implements OnInit {
       return;
     }
 
-    this.service.create(this.reservationEnCours).subscribe({
+    // On force l'ID à être un nombre et le nombre de places aussi
+    const payload = {
+      nomClient: this.reservationEnCours.nomClient,
+      typeCible: this.reservationEnCours.typeCible,
+      referenceCible: Number(this.reservationEnCours.referenceCible),
+      nombrePlaces: Number(this.reservationEnCours.nombrePlaces)
+    };
+
+    this.service.create(payload).subscribe({
       next: () => {
         this.successMessage = 'Réservation créée avec succès';
         this.fermerFormulaire();
         this.charger();
       },
       error: err => {
-        console.error(err);
+        console.error('Erreur complète :', err);
         this.errorMessage = typeof err.error === 'string' ? err.error : 'Erreur lors de la création';
       }
     });

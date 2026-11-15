@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  ms-patrimoine:
+    build: ./ms-patrimoine
+    container_name: ms-patrimoine
+    ports:
+      - "8080:8080"
+    networks:
+      - patrimoine-network
+
+  ms-circuit:
+    build: ./ms-circuit
+    container_name: ms-circuit
+    ports:
+      - "8081:8081"
+    networks:
+      - patrimoine-network
+
+  ms-evenement:
+    build: ./ms-evenement
+    container_name: ms-evenement
+    ports:
+      - "8082:8082"
+    networks:
+      - patrimoine-network
+
+  ms-reservation:
+    build: ./ms-reservation
+    container_name: ms-reservation
+    ports:
+      - "8083:8083"
+    environment:
+      - SERVICES_EVENEMENT_URL=http://ms-evenement:8082
+      - SERVICES_CIRCUIT_URL=http://ms-circuit:8081
+    depends_on:
+      - ms-evenement
+      - ms-circuit
+    networks:
+      - patrimoine-network
+
+  frontend:
+    build: ./frontend-patrimoine
+    container_name: frontend-patrimoine
+    ports:
+      - "4200:80"
+    depends_on:
+      - ms-patrimoine
+      - ms-circuit
+      - ms-evenement
+      - ms-reservation
+    networks:
+      - patrimoine-network
+
+networks:
+  patrimoine-network:
+    driver: bridge

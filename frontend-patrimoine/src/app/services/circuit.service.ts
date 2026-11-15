@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class CircuitService {
-  private apiUrl = 'http://localhost:8081/api/circuits';
+  private apiUrl = '/api/circuits';
 
   constructor(private http: HttpClient) {}
 
