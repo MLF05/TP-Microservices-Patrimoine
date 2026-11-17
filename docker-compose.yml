@@ -1,41 +1,68 @@
 version: '3.8'
 
 services:
+  config-server:
+    build: ./config-server
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    networks:
+      - patrimoine-network
+
+  eureka-server:
+    build: ./eureka-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    depends_on:
+      - config-server
+    networks:
+      - patrimoine-network
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "9090:9090"
+    depends_on:
+      - eureka-server
+      - config-server
+    networks:
+      - patrimoine-network
+
   ms-patrimoine:
     build: ./ms-patrimoine
     container_name: ms-patrimoine
-    ports:
-      - "8080:8080"
+    depends_on:
+      - eureka-server
+      - config-server
     networks:
       - patrimoine-network
 
   ms-circuit:
     build: ./ms-circuit
     container_name: ms-circuit
-    ports:
-      - "8081:8081"
+    depends_on:
+      - eureka-server
+      - config-server
     networks:
       - patrimoine-network
 
   ms-evenement:
     build: ./ms-evenement
     container_name: ms-evenement
-    ports:
-      - "8082:8082"
+    depends_on:
+      - eureka-server
+      - config-server
     networks:
       - patrimoine-network
 
   ms-reservation:
     build: ./ms-reservation
     container_name: ms-reservation
-    ports:
-      - "8083:8083"
-    environment:
-      - SERVICES_EVENEMENT_URL=http://ms-evenement:8082
-      - SERVICES_CIRCUIT_URL=http://ms-circuit:8081
     depends_on:
-      - ms-evenement
-      - ms-circuit
+      - eureka-server
+      - config-server
     networks:
       - patrimoine-network
 
@@ -45,10 +72,7 @@ services:
     ports:
       - "4200:80"
     depends_on:
-      - ms-patrimoine
-      - ms-circuit
-      - ms-evenement
-      - ms-reservation
+      - api-gateway
     networks:
       - patrimoine-network
 

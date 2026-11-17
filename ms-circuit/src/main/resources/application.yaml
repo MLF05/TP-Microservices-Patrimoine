@@ -1,26 +1,19 @@
-server:
-  port: 8081
-
 spring:
   application:
-    name: circuit
-  datasource:
-    url: 'jdbc:h2:mem:circuitdb'
-  h2:
-    console:
-      enabled: true
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: update
+    name: ms-circuit
+  config:
+    import: optional:configserver:http://config-server:8888
   cloud:
     config:
-      enabled: false
-    discovery:
-      enabled: false
+      retry:
+        initial-interval: 1000
+        max-attempts: 10
+        max-interval: 2000
+        multiplier: 1.5
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: '*'
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+  instance:
+    prefer-ip-address: true

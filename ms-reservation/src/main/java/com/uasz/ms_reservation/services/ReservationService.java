@@ -19,20 +19,18 @@ public class ReservationService implements IReservationService {
     @Autowired
     private RestTemplate restTemplate;
 
-    // URLs des autres microservices (noms de conteneurs Docker)
-    private static final String CIRCUIT_URL = "http://ms-circuit:8081/api/circuits/";
-    private static final String EVENEMENT_URL = "http://ms-evenement:8082/api/evenements/";
+    // URLs logiques des autres microservices (résolues par Eureka)
+    private static final String CIRCUIT_URL = "http://ms-circuit/api/circuits/";
+    private static final String EVENEMENT_URL = "http://ms-evenement/api/evenements/";
 
     @Override
     public Reservation creerReservation(Reservation reservation) {
 
-        // 1. Vérifier le type de cible
         if (!"CIRCUIT".equals(reservation.getTypeCible())
                 && !"EVENEMENT".equals(reservation.getTypeCible())) {
             throw new RuntimeException("typeCible doit être CIRCUIT ou EVENEMENT");
         }
 
-        // 2. Vérifier la disponibilité auprès du bon microservice
         boolean dispo = verifierDisponibilite(
                 reservation.getTypeCible(),
                 reservation.getReferenceCible(),
@@ -43,7 +41,6 @@ public class ReservationService implements IReservationService {
             throw new RuntimeException("Pas assez de places disponibles");
         }
 
-        // 3. Réserver les places côté ms-evenement
         if ("EVENEMENT".equals(reservation.getTypeCible())) {
             try {
                 restTemplate.put(EVENEMENT_URL + reservation.getReferenceCible()
@@ -53,7 +50,6 @@ public class ReservationService implements IReservationService {
             }
         }
 
-        // 4. Créer la réservation avec statut EN_ATTENTE
         reservation.setDateReservation(LocalDate.now());
         reservation.setStatut("EN_ATTENTE");
         return reservationRepository.save(reservation);
@@ -62,24 +58,19 @@ public class ReservationService implements IReservationService {
     private boolean verifierDisponibilite(String typeCible, Long id, int nombrePlaces) {
         try {
             if ("EVENEMENT".equals(typeCible)) {
-                // Appel HTTP à ms-evenement : /api/evenements/{id}/disponibilite?nombrePlaces=N
                 String url = EVENEMENT_URL + id + "/disponibilite?nombrePlaces=" + nombrePlaces;
                 Boolean dispo = restTemplate.getForObject(url, Boolean.class);
                 return Boolean.TRUE.equals(dispo);
             } else if ("CIRCUIT".equals(typeCible)) {
-                // Appel HTTP à ms-circuit : on vérifie juste que le circuit existe
-                // (le circuit n'a pas de notion de places pour l'instant)
                 restTemplate.getForObject(CIRCUIT_URL + id, Object.class);
                 return true;
             }
         } catch (Exception e) {
-            // Service injoignable ou ressource inexistante → refus
             return false;
         }
         return false;
     }
 
-    // Rend les places à l'événement (sauf si la réservation était déjà annulée)
     private void libererPlaces(Reservation r) {
         if ("EVENEMENT".equals(r.getTypeCible()) && !"ANNULEE".equals(r.getStatut())) {
             try {

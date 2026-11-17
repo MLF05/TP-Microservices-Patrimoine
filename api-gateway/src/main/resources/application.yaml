@@ -1,0 +1,34 @@
+server:
+  port: 9090
+
+spring:
+  application:
+    name: api-gateway
+  config:
+    import: optional:configserver:http://config-server:8888
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: ms-patrimoine
+              uri: lb://ms-patrimoine
+              predicates:
+                - Path=/api/patrimoines/**
+            - id: ms-circuit
+              uri: lb://ms-circuit
+              predicates:
+                - Path=/api/circuits/**
+            - id: ms-evenement
+              uri: lb://ms-evenement
+              predicates:
+                - Path=/api/evenements/**
+            - id: ms-reservation
+              uri: lb://ms-reservation
+              predicates:
+                - Path=/api/reservations/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/

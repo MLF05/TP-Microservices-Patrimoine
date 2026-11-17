@@ -1,26 +1,19 @@
-server:
-  port: 8083
-
 spring:
   application:
-    name: reservation
-  datasource:
-    url: 'jdbc:h2:mem:reservationdb'
-  h2:
-    console:
-      enabled: true
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: update
+    name: ms-reservation
+  config:
+    import: optional:configserver:http://config-server:8888
   cloud:
     config:
-      enabled: false
-    discovery:
-      enabled: false
+      retry:
+        initial-interval: 1000
+        max-attempts: 10
+        max-interval: 2000
+        multiplier: 1.5
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: '*'
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+  instance:
+    prefer-ip-address: true
